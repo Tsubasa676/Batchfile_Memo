@@ -1,4 +1,38 @@
-◆履歴
+◆基本
+・余計な出力無効
+@ECHO OFF
+CLS
+・出力
+ECHO Hello World
+・キー入力
+SET Hoge=
+SET /P Hoge="入力してください："
+IF "%Hoge%" EQU "比較対象" (
+  何かの処理
+)
+・計算
+SET Hoge=1
+SET /A Hoge=Hoge + 1
+・一行で複数行の出力　「&&」で区切る
+ECHO.&&ECHO HogePiyo&&ECHO.
+・タイトル設定
+TITLE HogePiyo
+・引数
+%*　全引数
+%1　第一引数
+%2　第二引数...
+・配列もどき
+SET Hoge1=test1
+SET Hoge2=test2
+SET Hoge3=test3
+というように固有変数名に連番を振り、
+SET Input=
+SET /P Input="・入力："
+SET HogeCheck=
+CALL SET HogeCheck=%%Hoge%Input%%%
+→%Input%が1なら%HogeCheck%はtest1が入り、%Input%がxなら%HogeCheck%はブランクが入る
+
+◆大小関係
 [数値1] equ [数値2]	[数値1]と[数値2]が等しい
 [数値1] neq [数値2]	[数値1]と[数値2]が等しくない
 [数値1] lss [数値2]	[数値1]が[数値2]より小さい
@@ -7,15 +41,49 @@
 [数値1] geq [数値2]	[数値1]が[数値2]以上
 
 ◆ファイル出力
-> 絶対パス.txt
+・ファイル上書き
+何かのコマンド or ECHO HOGE> 絶対パス.txt
+・ファイル追記
+何かのコマンド or ECHO HOGE>> 絶対パス.txt
+
+◆終了
+GOTO :EOF　で最終行に飛ぶ（処理終了）
+EXIT 0　で処理終了、AバッチからBバッチを呼び出した場合、Bバッチにこのコマンドが記載されていたらAバッチの処理も終了する
+EXIT /B 0　で処理終了、AバッチからBバッチを呼び出した場合、Bバッチにこのコマンドが記載されていたらBバッチの処理終了後にAバッチの処理に戻る
+
+◆CALLとGOTO
+CALL 他のバッチのフルパス　で別のバッチを呼び出せる
+CALL :Hoge_Label　で対象のサブルーチンを実行し、実行後にここから処理を再開できる
+GOTO Hoge_Label　で対象のサブルーチンを実行し、実行後ここには戻ってこない
+GOTO :EOF　行末に飛びたい場合は:EOFと記載すること
+
+◆エラーレベル
+%ERRORLEVEL%で、実行したコマンドや実行結果コード（EXIT (/B) 0）を確認できる
 
 ◆階層（/f：Fileも）
 tree /f 絶対パス
 
+◆遅延
+TIMEOUT /T 1　スキップ可能
+TIMEOUT /T 1 /NOBREAK スキップ不可能
+TIMEOUT /T 1 > NUL　カウントダウン秒数非表示
+
 ◆遅延関数
-必ず、有効範囲を指定する。
-理由：winrsだとか「!」がを含むファイル名などでバグる事がある。
+必ず、有効範囲を指定する。あまり使わないように。
+For文などで変数Hogeの値をどんどん変えていきたいときなどに使用する
+理由：winrsだとか「!」がを含むファイル名などで意図しない動作が起こる。
 SETLOCAL ENABLEDELAYEDEXPANSION
 ～
 ENDLOCAL
+
+◆遅延関数を使わないFor文
+For文内でサブルーチンを呼ぶことで遅延関数「!Hoge!」を使用せずに「%Hoge%」で記述することが出来るが、その分記述が増える
+
+◆サブルーチン
+メソッドのように使うことが出来る。引数も使用可能
+:Hoge_Check
+  何かの処理
+  %*で全引数
+  %1で第一引数、%2で第二引数、、、
+GOTO :EOF
 
